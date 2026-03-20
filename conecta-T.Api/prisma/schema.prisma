@@ -22,4 +22,20 @@ model Usuario {
   foto           String?
   fechaNac       DateTime
   fechaCreacion  DateTime @default(now())
+
+  publicaciones  Publicacion[]
+
+  // Relacion de seguidores y seguidos
+  siguiendo Usuario[] @relation("UsuarioSigue")
+  seguidores Usuario[] @relation("UsuarioSigue")
+}
+
+model Publicacion {
+  id            Int @id @default(autoincrement())
+  texto         String
+  foto          String
+  fechaCreacion DateTime @default(now())
+
+  autor         Usuario @relation(fields: [autorId], references: [id])
+  autorId       Int
 }

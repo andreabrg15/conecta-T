@@ -3,20 +3,22 @@ import { prisma } from '../database.js'
 
 const router = Router();
 
+// Metodo GET --> /usuarios (Obtener lista de usuarios)
 router.get('/usuarios', async (req, res) => {
     try {
         const usuarios = await prisma.usuario.findMany();
         res.status(200).json(usuarios);
     } catch(error) {
-        res.status(500).json({"message": error});
+        res.status(500).json({"message": error.message});
     }
 })
 
+// Metodo GET --> /usuarios/1 (Obtener detalles de un usuario)
 router.get('/usuarios/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const { id } = req.params;
         const usuario = await prisma.usuario.findUnique({
-            where: { id:  Number(id) }
+            where: { id:  id }
         });
 
         if (!usuario) {
@@ -25,57 +27,141 @@ router.get('/usuarios/:id', async (req, res) => {
         res.status(200).json(usuario);
 
     } catch(error) {
-        res.status(500).json({"message": error});
+        res.status(500).json({"message": error.message});
     }
 })
 
+// Metodo GET --> /usuarios/seguidos/1 (Obtener lista de usuarios seguidos por este usuario)
+router.get('/usuarios/seguidos/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const usuarioSigue = await prisma.usuario.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                nombreUsuario: true,
+                siguiendo: true
+            }
+        });
+
+        if (!usuarioSigue) {
+            res.status(404).json({"error": "No se encontró un usuario con ese Id"});
+        }
+        res.status(200).json(usuarioSigue);
+    } catch (error) {
+        res.status(500).json({"message": error.message});
+    }
+})
+
+// Metodo GET --> /usuarios/seguidores/1 (Obtener lista de usuarios que siguen a este usuario)
+router.get('/usuarios/seguidores/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const usuarioSiguen = await prisma.usuario.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                nombreUsuario: true,
+                seguidores: true
+            }
+        });
+
+        if (!usuarioSiguen) {
+            res.status(404).json({"error": "No se encontró un usuario con ese Id"});
+        }
+        res.status(200).json(usuarioSiguen);
+    } catch (error) {
+        res.status(500).json({"message": error.message});
+    }
+})
+
+// Metodo POST --> /usuarios (Agregar un nuevo usuario)
 router.post('/usuarios', async (req, res) => {
+    const { nombreUsuario, contrasena, foto, fechaNac } = req.body;
+
     try {
-        const { nombreUsuario, contrasena, foto, fechaNac } = req.body;
-        if (foto != null) {
-            const usuario = await prisma.usuario.create({
-                data: {
-                    nombreUsuario,
-                    contrasena,
-                    foto,
-                    fechaNac
-                }
-            });
-            res.status(201).json(usuario);
+        /*
+        Ejemplo: Ingresar esto en el body
+        {
+            "nombreUsuario": "usuario123",
+            "contrasena": "1234",
+            "foto": "https://example.com/fotos/miFoto.jpg",
+            "fechaNac": "2004-09-20T00:00:00Z"
         }
+        */
+        const usuario = await prisma.usuario.create({
+            data: {
+                nombreUsuario,
+                contrasena,
+                foto: foto || null,
+                fechaNac
+            }
+        });
+        res.status(201).json(usuario);
     } catch (error) {
-        res.status(500).json({"message": error})
+        res.status(500).json({"message": error.message});
     }
 })
 
+// Metodo PUT --> /usuarios (Modificar datos de un usuario)
 router.put('/usuarios/:id', async (req, res) => {
-    try {
-        const { contrasena, nombre, apellido } = req.body;
-        const { id } = req.params;
-        if (nombre != null && apellido != null) {
-            await prisma.usuario.update({
-                where: { id: Number(id) },
-                data: {
-                    contrasena,
-                    foto
-                }
-            });
-            res.status(204).end();
-        }
-    } catch (error) {
-        res.status(500).json({"message": error})
-    }
-})
+    const { contrasena, foto } = req.body;
+    const id = parseInt(req.params.id);
 
-router.delete('/usuarios/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        await prisma.usuario.delete({
-            where: { id: Number(id) }
+        /*
+        Ejemplo: Ingresar esto en el body
+        {
+            "contrasena": "4321",
+            "foto": "https://example.com/fotos/superFoto.jpg"
+        }
+        */
+        await prisma.usuario.update({
+            where: { id: id },
+            data: {
+                contrasena,
+                foto: foto || null
+            }
         });
         res.status(204).end();
     } catch (error) {
-        res.status(500).json({"message": error})
+        res.status(500).json({"message": error.message});
+    }
+})
+
+// Metodo PUT --> /usuarios/1 (Guardar usuario sigue a otro usuario)
+router.put('/usuarios/seguir/:id', async (req, res) => {
+    const { seguidoId } = req.body;
+    const seguidorId = parseInt(req.params.id);
+
+    try {
+        await prisma.usuario.update({
+            where: { id: seguidorId },
+            data: {
+                siguiendo: {
+                    connect: { id: seguidoId }
+                }
+            }
+        });
+        res.status(204).end();
+    } catch (error) {
+        res.send(500).json({"message": error.message});
+    }
+})
+
+// Metodo DELETE --> /usuarios (Borrar un usuario)
+router.delete('/usuarios/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        await prisma.usuario.delete({
+            where: { id: id }
+        });
+        res.status(204).end();
+    } catch (error) {
+        res.status(500).json({"message": error.message});
     }
 })
 
