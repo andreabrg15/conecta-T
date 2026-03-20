@@ -151,6 +151,26 @@ router.put('/usuarios/seguir/:id', async (req, res) => {
     }
 })
 
+// Metodo PUT --> /usuarios/1 (Guardar usuario dejo de seguir a otro usuario)
+router.put('/usuarios/dejarDeSeguir/:id', async (req, res) => {
+    const { seguidoId } = req.body;
+    const seguidorId = parseInt(req.params.id);
+
+    try {
+        await prisma.usuario.update({
+            where: { id: seguidorId },
+            data: {
+                siguiendo: {
+                    disconnect: { id: seguidoId }
+                }
+            }
+        });
+        res.status(204).end();
+    } catch (error) {
+        res.send(500).json({"message": error.message});
+    }
+})
+
 // Metodo DELETE --> /usuarios (Borrar un usuario)
 router.delete('/usuarios/:id', async (req, res) => {
     const id = parseInt(req.params.id);

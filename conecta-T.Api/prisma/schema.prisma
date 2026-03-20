@@ -25,9 +25,11 @@ model Usuario {
 
   publicaciones  Publicacion[]
 
+  comentarios    Comentario[]
+
   // Relacion de seguidores y seguidos
-  siguiendo Usuario[] @relation("UsuarioSigue")
-  seguidores Usuario[] @relation("UsuarioSigue")
+  siguiendo      Usuario[] @relation("UsuarioSigue")
+  seguidores     Usuario[] @relation("UsuarioSigue")
 }
 
 model Publicacion {
@@ -38,4 +40,18 @@ model Publicacion {
 
   autor         Usuario @relation(fields: [autorId], references: [id])
   autorId       Int
+
+  comentarios   Comentario[]
+}
+
+model Comentario {
+  id            Int @id @default(autoincrement())
+  texto         String
+  fechaCreacion DateTime @default(now())
+
+  autor         Usuario @relation(fields: [autorId], references: [id])
+  autorId       Int
+
+  publicacion   Publicacion @relation(fields: [publicacionId], references: [id])
+  publicacionId Int
 }

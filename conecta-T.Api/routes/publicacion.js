@@ -6,6 +6,34 @@ const router = Router();
 // Metodo GET --> /publicaciones (Obtener lista de publicaciones de quienes sigue un usuario -FEED-)
 router.get('/publicaciones', async (req, res) => {
     const { usuarioId } = req.body;
+
+    if (typeof usuarioId != 'number') {
+        return res.status(400).json({"error": "El Id del usuario debe ser un número"});
+    }
+
+    try {
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: usuarioId }
+        });
+
+        if (!usuario) {
+            res.status(404).json({"error": "No se encontró un usuario con ese Id"});
+        }
+        const usuarioFeed = await prisma.usuario.findUnique({
+            where: { id: usuarioId },
+            select: {
+                siguiendo: { 
+                    select: { 
+                        publicaciones: true 
+                    } 
+                }
+            }
+        });
+
+        res.status(200).json(usuarioFeed);
+    } catch (error) {
+        res.status(500).json({"message": error.message});
+    }
 })
 
 // Metodo GET --> /publicaciones/1 (Obtener lista de publicaciones de un usuario)
