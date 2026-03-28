@@ -12,7 +12,7 @@ router.get('/comentarios/:id', async (req, res) => {
             where: { id: publicacionId }
         });
         if (!publicacion) {
-            return res.status(404).json({"error": "No existe una publicacion con ese Id"});
+            return res.status(404).json({"error": "No se encontró ninguna publicacion con ese Id"});
         }
 
         const comentarios = await prisma.publicacion.findUnique({
@@ -36,22 +36,6 @@ router.post('/comentarios', async (req, res) => {
     }
 
     try {
-        const publicacion = await prisma.publicacion.findUnique({
-            where: { id: publicacionId }
-        });
-
-        if (!publicacion) {
-            return res.status(404).json({"error": "No se encontró una publicación con ese Id"});
-        }
-
-        const autor = await prisma.usuario.findUnique({
-            where: { id: autorId }
-        });
-
-        if (!autor) {
-            return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
-        }
-
         const comentario = await prisma.comentario.create({
             data: {
                 texto,
@@ -69,54 +53,6 @@ router.post('/comentarios', async (req, res) => {
         });
 
         res.status(201).json(comentario);
-    } catch (error) {
-        res.status(500).json({"message": error.message});
-    }
-})
-
-// Metodo PUT --> /comentarios (Modificar un comentario de un usuario)
-router.put('/comentarios/:id', async (req, res) => {
-    const { texto } = req.body;
-    const id = parseInt(req.params.id);
-
-    try {
-        const comentario = await prisma.comentario.findUnique({
-            where: { id }
-        });
-
-        if (!comentario) {
-            return res.status(404).json({"error": "No se encontró un comentario con ese Id"});
-        }
-
-        await prisma.comentario.update({
-            where: { id },
-            data: {
-                texto
-            }
-        });
-        res.status(204).end();
-    } catch (error) {
-        res.status(500).json({"message": error.message});
-    }
-})
-
-// Metodo DELETE --> /comentarios (Borrar un comentario de un usuario)
-router.delete('/comentarios/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-
-    try {
-        const comentario = await prisma.comentario.findUnique({
-            where: { id }
-        });
-
-        if (!comentario) {
-            return res.status(404).json({"error": "No existe un comentario con ese Id"});
-        }
-
-        await prisma.comentario.delete({
-            where: { id }
-        });
-        res.status(204).end();
     } catch (error) {
         res.status(500).json({"message": error.message});
     }

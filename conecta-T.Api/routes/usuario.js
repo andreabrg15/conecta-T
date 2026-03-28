@@ -46,7 +46,7 @@ router.get('/usuarios/seguidos/:id', async (req, res) => {
         });
 
         if (!usuarioSigue) {
-            return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
+            res.status(404).json({"error": "No se encontró un usuario con ese Id"});
         }
         res.status(200).json(usuarioSigue);
     } catch (error) {
@@ -86,7 +86,7 @@ router.post('/usuarios', async (req, res) => {
         Ejemplo: Ingresar esto en el body
         {
             "nombreUsuario": "usuario123",
-            "contrasena": "1234", 
+            "contrasena": "1234",
             "foto": "https://example.com/fotos/miFoto.jpg",
             "fechaNac": "2004-09-20T00:00:00Z"
         }
@@ -111,13 +111,6 @@ router.put('/usuarios/:id', async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const usuario = await prisma.usuario.findUnique({
-            where: { id }
-        });
-
-        if (!usuario) {
-            return res.status(404).json({"error": "No existe un usuario con ese Id"});
-        }
         /*
         Ejemplo: Ingresar esto en el body
         {
@@ -141,23 +134,9 @@ router.put('/usuarios/:id', async (req, res) => {
 // Metodo PUT --> /usuarios/1 (Guardar usuario sigue a otro usuario)
 router.put('/usuarios/seguir/:id', async (req, res) => {
     const { seguidoId } = req.body;
-    if (typeof seguidoId != 'number') {
-        return res.status(400).json({"error": "El Id debe ser un número"});
-    }
     const seguidorId = parseInt(req.params.id);
 
     try {
-        const seguidor = await prisma.usuario.findUnique({
-            where: { id: seguidorId }
-        });
-        const seguido = await prisma.usuario.findUnique({
-            where: { id: seguidoId }
-        });
-
-        if (!seguidor || !seguido) {
-            return res.status(404).json({"error": "No existe un usuario con ese Id"});
-        }
-
         await prisma.usuario.update({
             where: { id: seguidorId },
             data: {
@@ -175,23 +154,9 @@ router.put('/usuarios/seguir/:id', async (req, res) => {
 // Metodo PUT --> /usuarios/1 (Guardar usuario dejo de seguir a otro usuario)
 router.put('/usuarios/dejarDeSeguir/:id', async (req, res) => {
     const { seguidoId } = req.body;
-    if (typeof seguidoId != 'number') {
-        return res.status(400).json({"error": "El Id debe ser un número"});
-    }
     const seguidorId = parseInt(req.params.id);
 
     try {
-        const seguidor = await prisma.usuario.findUnique({
-            where: { id: seguidorId }
-        });
-        const seguido = await prisma.usuario.findUnique({
-            where: { id: seguidoId }
-        });
-
-        if (!seguidor || !seguido) {
-            return res.status(404).json({"error": "No existe un usuario con ese Id"});
-        }
-
         await prisma.usuario.update({
             where: { id: seguidorId },
             data: {
@@ -211,14 +176,6 @@ router.delete('/usuarios/:id', async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const usuario = await prisma.usuario.findUnique({
-            where: { id }
-        });
-
-        if (!usuario) {
-            return res.status(404).json({"error": "No existe un usuario con ese Id"});
-        }
-
         await prisma.usuario.delete({
             where: { id: id }
         });

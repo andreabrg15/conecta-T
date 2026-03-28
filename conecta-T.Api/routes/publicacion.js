@@ -5,10 +5,6 @@ const router = Router();
 
 // Metodo GET --> /publicaciones (Obtener lista de publicaciones de quienes sigue un usuario -FEED-)
 router.get('/publicaciones', async (req, res) => {
-
-    if (!req.body) {
-        return res.status(400).json({"error": "Debe proporcionar el Id del usuario en sesion"});
-    }
     const { usuarioId } = req.body;
 
     if (typeof usuarioId != 'number') {
@@ -21,7 +17,7 @@ router.get('/publicaciones', async (req, res) => {
         });
 
         if (!usuario) {
-            return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
+            res.status(404).json({"error": "No se encontró un usuario con ese Id"});
         }
         const usuarioFeed = await prisma.usuario.findUnique({
             where: { id: usuarioId },
@@ -45,14 +41,6 @@ router.get('/publicaciones/:autorId', async (req, res) => {
     const autorId = parseInt(req.params.autorId);
 
     try {
-        const usuario = await prisma.usuario.findUnique({
-            where: { id: autorId }
-        });
-
-        if (!usuario) {
-            return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
-        }
-
         const publicaciones = await prisma.publicacion.findMany({
             where: { autorId },
             orderBy: { fechaCreacion: "desc" }
@@ -66,19 +54,7 @@ router.get('/publicaciones/:autorId', async (req, res) => {
 // Metodo POST --> /publicaciones (Subir nueva publicacion)
 router.post('/publicaciones', async (req, res) => {
     const { texto, foto, autorId } = req.body;
-
-    if (typeof autorId != 'number') {
-        return res.status(400).json({"error": "El Id del autor debe ser un número"});
-    }
-
     try {
-        const usuario = await prisma.usuario.findUnique({
-            where: { id: usuarioId }
-        });
-
-        if (!usuario) {
-            return res.status(404).json({"error": "No se pudo encontrar un usuario con ese Id"});
-        }
         /*
         Ejemplo: Ingresar esto en el body
         {
@@ -115,14 +91,6 @@ router.put('/publicaciones/:id', async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const publicacion = await prisma.publicacion.findUnique({
-            where: { id }
-        });
-
-        if (!publicacion) {
-            return res.status(404).json({"error": "No se encontró una publicación con ese Id"});
-        }
-
         await prisma.publicacion.update({
             where: {
                 id: id
@@ -143,14 +111,6 @@ router.delete('/publicaciones/:id', async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const publicacion = await prisma.publicacion.findUnique({
-            where: { id }
-        });
-
-        if (!publicacion) {
-            return res.status(404).json({"error": "No existe una publicación con ese Id"});
-        }
-
         await prisma.publicacion.delete({
             where: { id: id }
         });
