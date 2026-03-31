@@ -4,3 +4,52 @@ node_modules
 .env
 
 migrations
+
+# Angular setup
+
+conecta-T.Front/readme.md
+
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+conecta-T.Front/dist
+conecta-T.Front/tmp
+conecta-T.Front/out-tsc
+conecta-T.Front/bazel-out
+
+# Node
+conecta-T.Front/node_modules
+conecta-T.Front/npm-debug.log
+conecta-T.Front/yarn-error.log
+
+# IDEs and editors
+conecta-T.Front/.idea/
+conecta-T.Front/.project
+conecta-T.Front/.classpath
+conecta-T.Front/.c9/
+conecta-T.Front/*.launch
+conecta-T.Front/.settings/
+conecta-T.Front/*.sublime-workspace
+
+# Visual Studio Code
+conecta-T.Front/.vscode/*
+conecta-T.Front/!.vscode/settings.json
+conecta-T.Front/!.vscode/tasks.json
+conecta-T.Front/!.vscode/launch.json
+conecta-T.Front/!.vscode/extensions.json
+conecta-T.Front/!.vscode/mcp.json
+conecta-T.Front/.history/*
+
+# Miscellaneous
+conecta-T.Front/.angular/cache
+conecta-T.Front/.sass-cache/
+conecta-T.Front/connect.lock
+conecta-T.Front/coverage
+conecta-T.Front/libpeerconnection.log
+conecta-T.Front/testem.log
+conecta-T.Front/typings
+conecta-T.Front/__screenshots__/
+
+# System files
+conecta-T.Front/.DS_Store
+conecta-T.Front/Thumbs.db
