@@ -3,11 +3,21 @@ import { prisma } from '../database.js'
 
 const router = Router();
 
-// Metodo GET --> /usuarios (Obtener lista de usuarios)
+// Metodo GET --> /usuarios (Autorizar o no inicio de sesion)
 router.get('/usuarios', async (req, res) => {
+    const nombreUsuario = req.get('nombre-usuario');
+    const contra = req.get('contra');
     try {
-        const usuarios = await prisma.usuario.findMany();
-        res.status(200).json(usuarios);
+        const usuario = await prisma.usuario.findUnique({
+            where: { 
+                nombreUsuario, contrasena: contra,
+                fechaBaja: null
+            }
+        });
+        if (!usuario) {
+            return res.status(401).json({"error":"Credenciales no válidas"});
+        }
+        res.status(200).json(usuario.id);
     } catch(error) {
         res.status(500).json({"message": error.message});
     }
@@ -210,18 +220,34 @@ router.put('/usuarios/dejarDeSeguir/:id', async (req, res) => {
 router.delete('/usuarios/:id', async (req, res) => {
     const id = parseInt(req.params.id);
 
+    const now = new Date();
+
     try {
         const usuario = await prisma.usuario.findUnique({
             where: { id }
         });
 
-        if (!usuario) {
+        if (!usuario || usuario.fechaBaja != null) {
             return res.status(404).json({"error": "No existe un usuario con ese Id"});
         }
 
-        await prisma.usuario.delete({
-            where: { id: id }
+        await prisma.usuario.update({
+            where: { id: id }, 
+            data: { 
+                fechaBaja: now,
+                publicaciones: {
+                    updateMany: {
+                        where: { autorId: id }, data: { fechaBaja: now }
+                    }
+                },
+                comentarios: {
+                    updateMany: {
+                        where: { autorId: id }, data: { fechaBaja: now }
+                    }
+                } 
+            }
         });
+
         res.status(204).end();
     } catch (error) {
         res.status(500).json({"message": error.message});

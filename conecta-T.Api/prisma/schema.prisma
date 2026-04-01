@@ -22,6 +22,7 @@ model Usuario {
   foto           String?
   fechaNac       DateTime
   fechaCreacion  DateTime @default(now())
+  fechaBaja      DateTime?
 
   publicaciones  Publicacion[]
 
@@ -37,6 +38,7 @@ model Publicacion {
   texto         String
   foto          String
   fechaCreacion DateTime @default(now())
+  fechaBaja     DateTime?
 
   autor         Usuario @relation(fields: [autorId], references: [id])
   autorId       Int
@@ -48,6 +50,7 @@ model Comentario {
   id            Int @id @default(autoincrement())
   texto         String
   fechaCreacion DateTime @default(now())
+  fechaBaja     DateTime?
 
   autor         Usuario @relation(fields: [autorId], references: [id])
   autorId       Int

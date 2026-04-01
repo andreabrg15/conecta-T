@@ -11,14 +11,16 @@ router.get('/comentarios/:id', async (req, res) => {
         const publicacion = await prisma.publicacion.findUnique({
             where: { id: publicacionId }
         });
-        if (!publicacion) {
+        if (!publicacion || publicacion.fechaBaja != null) {
             return res.status(404).json({"error": "No existe una publicacion con ese Id"});
         }
 
         const comentarios = await prisma.publicacion.findUnique({
             where: { id: publicacionId },
             select: {
-                comentarios: true
+                comentarios: {
+                    where: { fechaBaja: null }
+                }
             }
         });
         res.status(200).json(comentarios);
@@ -40,7 +42,7 @@ router.post('/comentarios', async (req, res) => {
             where: { id: publicacionId }
         });
 
-        if (!publicacion) {
+        if (!publicacion || publicacion.fechaBaja != null) {
             return res.status(404).json({"error": "No se encontró una publicación con ese Id"});
         }
 
@@ -48,7 +50,7 @@ router.post('/comentarios', async (req, res) => {
             where: { id: autorId }
         });
 
-        if (!autor) {
+        if (!autor || autor.fechaBaja != null) {
             return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
         }
 
@@ -84,7 +86,7 @@ router.put('/comentarios/:id', async (req, res) => {
             where: { id }
         });
 
-        if (!comentario) {
+        if (!comentario || comentario.fechaBaja != null) {
             return res.status(404).json({"error": "No se encontró un comentario con ese Id"});
         }
 
@@ -109,12 +111,13 @@ router.delete('/comentarios/:id', async (req, res) => {
             where: { id }
         });
 
-        if (!comentario) {
+        if (!comentario || comentario.fechaBaja != null) {
             return res.status(404).json({"error": "No existe un comentario con ese Id"});
         }
 
-        await prisma.comentario.delete({
-            where: { id }
+        await prisma.comentario.update({
+            where: { id },
+            data: { fechaBaja: new Date() }
         });
         res.status(204).end();
     } catch (error) {

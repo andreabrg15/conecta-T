@@ -20,16 +20,19 @@ router.get('/publicaciones', async (req, res) => {
             where: { id: usuarioId }
         });
 
-        if (!usuario) {
+        if (!usuario || usuario.fechaBaja != null) {
             return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
         }
+        
         const usuarioFeed = await prisma.usuario.findUnique({
             where: { id: usuarioId },
             select: {
                 siguiendo: { 
                     select: { 
-                        publicaciones: true 
-                    } 
+                        publicaciones: {
+                            where: { fechaBaja: null }
+                        }
+                    }
                 }
             }
         });
@@ -49,12 +52,12 @@ router.get('/publicaciones/:autorId', async (req, res) => {
             where: { id: autorId }
         });
 
-        if (!usuario) {
+        if (!usuario || usuario.fechaBaja != null) {
             return res.status(404).json({"error": "No se encontró un usuario con ese Id"});
         }
 
         const publicaciones = await prisma.publicacion.findMany({
-            where: { autorId },
+            where: { autorId, fechaBaja: null },
             orderBy: { fechaCreacion: "desc" }
         });
         res.status(200).json(publicaciones);
@@ -73,10 +76,10 @@ router.post('/publicaciones', async (req, res) => {
 
     try {
         const usuario = await prisma.usuario.findUnique({
-            where: { id: usuarioId }
+            where: { id: autorId }
         });
 
-        if (!usuario) {
+        if (!usuario || usuario.fechaBaja != null) {
             return res.status(404).json({"error": "No se pudo encontrar un usuario con ese Id"});
         }
         /*
@@ -119,7 +122,7 @@ router.put('/publicaciones/:id', async (req, res) => {
             where: { id }
         });
 
-        if (!publicacion) {
+        if (!publicacion || publicacion.fechaBaja != null) {
             return res.status(404).json({"error": "No se encontró una publicación con ese Id"});
         }
 
@@ -142,17 +145,27 @@ router.put('/publicaciones/:id', async (req, res) => {
 router.delete('/publicaciones/:id', async (req, res) => {
     const id = parseInt(req.params.id);
 
+    const now = new Date();
+
     try {
         const publicacion = await prisma.publicacion.findUnique({
             where: { id }
         });
 
-        if (!publicacion) {
+        if (!publicacion || publicacion.fechaBaja != null) {
             return res.status(404).json({"error": "No existe una publicación con ese Id"});
         }
 
-        await prisma.publicacion.delete({
-            where: { id: id }
+        await prisma.publicacion.update({
+            where: { id: id },
+            data: { 
+                fechaBaja: now,
+                comentarios: {
+                    updateMany: {
+                        where: { publicacionId: id }, data: { fechaBaja: now }
+                    }
+                }
+            }
         });
         res.status(204).end();
     } catch (error) {
