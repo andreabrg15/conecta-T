@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Users } from '../../users';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -31,15 +33,30 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 })
 
 export class Home {
+
+  userService: Users = inject(Users);
+
   loginForm = new FormGroup({
     Username: new FormControl(''),
     Password: new FormControl('')
   });
 
+  constructor(private router: Router) {}
+
   submitLogin() {
     this.loginForm.value.Username ?? '';
     this.loginForm.value.Password ?? '';
 
-    alert('Usuario:'+this.loginForm.value.Username+' Contraseña:'+this.loginForm.value.Password);
+    this.userService
+    .getLogin(this.loginForm.value.Username || '', this.loginForm.value.Password || '')
+    .subscribe({
+      next: (value) => {
+        localStorage.setItem('Id_usuario', value);
+        this.router.navigate(['/feed']);
+      },
+      error: (err) => {
+        console.log(err.error);
+      }
+    });
   }
 }
