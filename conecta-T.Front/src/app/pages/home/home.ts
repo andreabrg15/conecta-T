@@ -1,18 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Users } from '../../users';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   template: ` 
   <div class="h-[88dvh] bg-linear-to-b from-slate-400 to-zinc-600 flex flex-col lg:flex-row items-center justify-center md:gap-15 lg:gap-25">
     <div>
-      <section class="bg-linear-to-br from-zinc-950 to-zinc-700 rounded-4xl px-20 py-15 shadow-xl/50">
+      <section class="bg-linear-to-br from-zinc-950 to-zinc-700 rounded-4xl p-10 md:p-15  shadow-xl/50">
         <form [formGroup]="loginForm" (submit)="submitLogin()" class="text-center grid justify-center gap-3">
           <label for="username" class="text-white font-story-script text-2xl">Nombre de usuario:</label>
-          <input id="username" type="text" placeholder="andreabrg..." 
+          <input id="username" type="text" placeholder="usuario123..." 
           class="bg-white/60 p-2 rounded-md" formControlName="Username"/>
 
           <label for="password" class="text-white font-story-script text-2xl">Contraseña:</label>
@@ -23,13 +23,15 @@ import { Router } from '@angular/router';
             Iniciar Sesión
           </button>
         </form>
+        <p class="text-white mt-5">
+          ¿Aún no tienes una cuenta? <a class="text-blue-400 underline hover:cursor-pointer" [routerLink]="['/registro']">Registrate</a>
+        </p>
       </section>
     </div>
     <div class="hidden md:block">
       <img src="home-image.jpg" alt="Home Pictures" class="w-[70dvw] md:w-[60dvw] lg:w-[42dvw] rounded-xl saturate-130"/>
     </div>
-  </div> `,
-  styles: ``,
+  </div> `
 })
 
 export class Home {

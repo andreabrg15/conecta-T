@@ -6,8 +6,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 
-// Buscar como consumir apis en angular
-
 export class Users {
   private readonly baseUrl = "http://localhost:3000/api/usuarios";
   
@@ -20,5 +18,16 @@ export class Users {
         'contra': contra
       }
     });
+  }
+
+  createUser( nombre_usuario:string, contra:string, fecha_nac:Date ) : Observable<any> {
+
+    const body = {
+      nombreUsuario: nombre_usuario,
+      contrasena: contra,
+      fechaNac: fecha_nac+'T00:00:00Z'
+    };
+
+    return this.http.post(this.baseUrl, body);
   }
 }

@@ -89,7 +89,8 @@ router.get('/usuarios/seguidores/:id', async (req, res) => {
 
 // Metodo POST --> /usuarios (Agregar un nuevo usuario)
 router.post('/usuarios', async (req, res) => {
-    const { nombreUsuario, contrasena, foto, fechaNac } = req.body;
+
+    const { nombreUsuario, contrasena, fotoUrl, fechaNac } = req.body;
 
     try {
         /*
@@ -97,7 +98,7 @@ router.post('/usuarios', async (req, res) => {
         {
             "nombreUsuario": "usuario123",
             "contrasena": "1234", 
-            "foto": "https://example.com/fotos/miFoto.jpg",
+            "fotoUrl": "https://example.com/fotos/miFoto.jpg",
             "fechaNac": "2004-09-20T00:00:00Z"
         }
         */
@@ -105,7 +106,7 @@ router.post('/usuarios', async (req, res) => {
             data: {
                 nombreUsuario,
                 contrasena,
-                foto: foto || null,
+                foto: fotoUrl || null,
                 fechaNac
             }
         });
@@ -117,7 +118,7 @@ router.post('/usuarios', async (req, res) => {
 
 // Metodo PUT --> /usuarios (Modificar datos de un usuario)
 router.put('/usuarios/:id', async (req, res) => {
-    const { contrasena, foto } = req.body;
+    const { contrasena, fotoUrl } = req.body;
     const id = parseInt(req.params.id);
 
     try {
@@ -132,14 +133,14 @@ router.put('/usuarios/:id', async (req, res) => {
         Ejemplo: Ingresar esto en el body
         {
             "contrasena": "4321",
-            "foto": "https://example.com/fotos/superFoto.jpg"
+            "fotoUrl": "https://example.com/fotos/superFoto.jpg"
         }
         */
         await prisma.usuario.update({
             where: { id: id },
             data: {
                 contrasena,
-                foto: foto || null
+                foto: fotoUrl || null
             }
         });
         res.status(204).end();
