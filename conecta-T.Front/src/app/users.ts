@@ -20,14 +20,7 @@ export class Users {
     });
   }
 
-  createUser( nombre_usuario:string, contra:string, fecha_nac:Date ) : Observable<any> {
-
-    const body = {
-      nombreUsuario: nombre_usuario,
-      contrasena: contra,
-      fechaNac: fecha_nac+'T00:00:00Z'
-    };
-
-    return this.http.post(this.baseUrl, body);
+  createUser( data: FormData ) : Observable<any> {
+    return this.http.post(this.baseUrl, data);
   }
 }

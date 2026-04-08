@@ -1,7 +1,65 @@
 import { Router } from 'express'
 import { prisma } from '../database.js'
+import multer from 'multer';
+import path from 'node:path';
 
 const router = Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/avatares');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+})
+
+const filter = (req, file, cb) => {
+    const allowedFiles = ['image/jpeg', 'image/jpg', 'image/png'];
+
+    if (allowedFiles.includes(file.mimetype)) {
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Tipo de archivo no aceptado. Debe ser .JPEG .JPG .PNG'), false);
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    fileFilter: filter
+})
+
+// Metodo POST --> /usuarios (Agregar un nuevo usuario)
+router.post('/usuarios', upload.single('foto'), async (req, res) => {
+
+    const { nombreUsuario, contrasena, fechaNac } = req.body;
+
+    const foto = req.file ? req.file.path : null;
+
+    try {
+        /*
+        Ejemplo: Ingresar esto en el body
+        {
+            "nombreUsuario": "usuario123",
+            "contrasena": "1234", 
+            "foto": "https://example.com/fotos/miFoto.jpg",
+            "fechaNac": "2004-09-20T00:00:00Z"
+        }
+        */
+        const usuario = await prisma.usuario.create({
+            data: {
+                nombreUsuario,
+                contrasena,
+                foto,
+                fechaNac
+            }
+        });
+        res.status(201).json(usuario);
+    } catch (error) {
+        res.status(500).json({"message": error.message});
+    }
+})
 
 // Metodo GET --> /usuarios (Autorizar o no inicio de sesion)
 router.get('/usuarios', async (req, res) => {
@@ -82,35 +140,6 @@ router.get('/usuarios/seguidores/:id', async (req, res) => {
             res.status(404).json({"error": "No se encontró un usuario con ese Id"});
         }
         res.status(200).json(usuarioSiguen);
-    } catch (error) {
-        res.status(500).json({"message": error.message});
-    }
-})
-
-// Metodo POST --> /usuarios (Agregar un nuevo usuario)
-router.post('/usuarios', async (req, res) => {
-
-    const { nombreUsuario, contrasena, fotoUrl, fechaNac } = req.body;
-
-    try {
-        /*
-        Ejemplo: Ingresar esto en el body
-        {
-            "nombreUsuario": "usuario123",
-            "contrasena": "1234", 
-            "fotoUrl": "https://example.com/fotos/miFoto.jpg",
-            "fechaNac": "2004-09-20T00:00:00Z"
-        }
-        */
-        const usuario = await prisma.usuario.create({
-            data: {
-                nombreUsuario,
-                contrasena,
-                foto: fotoUrl || null,
-                fechaNac
-            }
-        });
-        res.status(201).json(usuario);
     } catch (error) {
         res.status(500).json({"message": error.message});
     }

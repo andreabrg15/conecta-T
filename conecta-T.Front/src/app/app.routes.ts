@@ -7,22 +7,23 @@ import { Register } from './pages/register/register';
 export const routes: Routes = [
     {
         path: '', 
-        component: Home
+        component: Home,
+        title: 'Conecta-T'
     },
     {
         path: 'registro', 
         component: Register,
-        title: 'Conecta-T | Registro'
+        title: 'Registro | Conecta-T'
     },
     {
         path: 'perfil', 
         component: Profile,
-        title: 'Conecta-T | Perfil'
+        title: 'Perfil | Conecta-T'
     },
     {
         path: 'feed', 
         component: Feed,
-        title: 'Conecta-T | Inicio'
+        title: 'Inicio | Conecta-T'
     },
     {
         path: '**', redirectTo: ''
