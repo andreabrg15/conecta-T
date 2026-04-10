@@ -24,6 +24,8 @@ app.use(cors({
   }
 }));
 
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api', routerUsuario);
 app.use('/api', routerPublicacion);
 app.use('/api', routerComentario);

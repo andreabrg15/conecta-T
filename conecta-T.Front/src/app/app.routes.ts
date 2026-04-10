@@ -16,7 +16,7 @@ export const routes: Routes = [
         title: 'Registro | Conecta-T'
     },
     {
-        path: 'perfil', 
+        path: 'perfil/:id', 
         component: Profile,
         title: 'Perfil | Conecta-T'
     },

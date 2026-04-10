@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Users } from '../../users';
 import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
@@ -42,25 +43,31 @@ export class Home {
   userService: Users = inject(Users);
 
   loginForm = new FormGroup({
-    Username: new FormControl(''),
-    Password: new FormControl('')
-  });
+    Username: new FormControl<string>(''),
+    Password: new FormControl<string>('')
+  }); 
 
   constructor(private router: Router) {}
 
   submitLogin() {
-    this.loginForm.value.Username ?? '';
-    this.loginForm.value.Password ?? '';
+
+    const data = {
+      nombreUsuario: this.loginForm.value.Username,
+      contrasena: this.loginForm.value.Password
+    };
 
     this.userService
-    .getLogin(this.loginForm.value.Username || '', this.loginForm.value.Password || '')
+    .getLogin(JSON.stringify(data))
     .subscribe({
       next: (value) => {
-        localStorage.setItem('Id_usuario', value);
-        this.router.navigate(['/feed']);
+        sessionStorage.setItem('sesion_iniciada', 'true');
+        this.router.navigate(['/perfil', value]);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.log(err.error);
+        if (err.status == 401) {
+          alert('Error: Usuario y/o contraseña no válidos, Intenta de nuevo');
+        }
       }
     });
   }

@@ -1,9 +1,9 @@
 export interface UserInfo {
-    id?: number,
-    nombre_usuario: string,
+    id: number,
+    nombreUsuario: string,
     contrasena: string,
-    fotoUrl?: string,
+    foto?: string,
     fechaNac: Date,
-    fechaCreacion?: Date,
+    fechaCreacion: Date,
     fechaBaja?: Date
 }

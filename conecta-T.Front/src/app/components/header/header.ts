@@ -6,8 +6,19 @@ import { RouterLink } from "@angular/router";
   imports: [RouterLink],
   template: ` 
   <div class="bg-pink-950 h-[12dvh] font-story-script font-bold text-white flex items-center">
-    <a class="pl-10 text-3xl tracking-[0.25em] hover:cursor-pointer" [routerLink]="['/']">Conecta-T</a>
+    <a class="pl-10 text-3xl tracking-[0.25em] hover:cursor-pointer" [routerLink]="sesion_iniciada() ? ['/feed'] : ['/']">Conecta-T</a>
+    @if (sesion_iniciada()) {
+      <a>Iniciaste sesion</a>
+    }
   </div> `,
   styles: ``,
 })
-export class Header {}
+export class Header {
+  sesion_iniciada() : boolean {
+    if (sessionStorage.getItem('sesion_iniciada') != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}

@@ -92,7 +92,7 @@ export class Register implements OnDestroy {
     .createUser(formData)
     .subscribe({
       next: () => {
-        this.router.navigate(['/feed']);
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.log(err.error);

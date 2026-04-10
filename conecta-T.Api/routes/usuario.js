@@ -61,14 +61,15 @@ router.post('/usuarios', upload.single('foto'), async (req, res) => {
     }
 })
 
-// Metodo GET --> /usuarios (Autorizar o no inicio de sesion)
-router.get('/usuarios', async (req, res) => {
-    const nombreUsuario = req.get('nombre-usuario');
-    const contra = req.get('contra');
+// Metodo POST --> /usuarios (Autorizar o no inicio de sesion)
+router.post('/login', async (req, res) => {
+
+    const { nombreUsuario, contrasena } = req.body;
+    
     try {
         const usuario = await prisma.usuario.findUnique({
             where: { 
-                nombreUsuario, contrasena: contra,
+                nombreUsuario, contrasena,
                 fechaBaja: null
             }
         });
