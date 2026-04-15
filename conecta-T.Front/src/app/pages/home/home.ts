@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Users } from '../../users';
+import { Users } from '../../services/users';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -60,7 +60,7 @@ export class Home {
     .getLogin(JSON.stringify(data))
     .subscribe({
       next: (value) => {
-        sessionStorage.setItem('sesion_iniciada', 'true');
+        sessionStorage.setItem('id', value);
         this.router.navigate(['/perfil', value]);
       },
       error: (err: HttpErrorResponse) => {

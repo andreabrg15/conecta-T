@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserInfo } from './user-info';
+import { UserModel } from '../models/user-model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,7 @@ export class Users {
     return this.http.post(this.baseUrl, data);
   }
 
-  getUser( id_usuario:number ) : Observable<UserInfo> {
-    return this.http.get<UserInfo>(`${this.baseUrl}/${id_usuario}`);
+  getUser( id_usuario:number ) : Observable<UserModel> {
+    return this.http.get<UserModel>(`${this.baseUrl}/${id_usuario}`);
   }
 }

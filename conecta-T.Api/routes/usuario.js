@@ -87,7 +87,25 @@ router.get('/usuarios/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     try {
         const usuario = await prisma.usuario.findUnique({
-            where: { id:  id }
+            where: { 
+                id:  id, fechaBaja: null
+            },
+            select: {
+                id: true,
+                nombreUsuario: true,
+                contrasena: true,
+                foto: true,
+                fechaNac: true,
+                fechaCreacion: true,
+                fechaBaja: true,
+                /*siguiendo: {
+                    select: { _count: true }
+                },
+                seguidores: {
+                    select: { _count: true }
+                },
+                publicaciones: true*/
+            }
         });
 
         if (!usuario) {
@@ -153,7 +171,7 @@ router.put('/usuarios/:id', async (req, res) => {
 
     try {
         const usuario = await prisma.usuario.findUnique({
-            where: { id }
+            where: { id, fechaBaja: null }
         });
 
         if (!usuario) {
@@ -189,10 +207,10 @@ router.put('/usuarios/seguir/:id', async (req, res) => {
 
     try {
         const seguidor = await prisma.usuario.findUnique({
-            where: { id: seguidorId }
+            where: { id: seguidorId, fechaBaja: null }
         });
         const seguido = await prisma.usuario.findUnique({
-            where: { id: seguidoId }
+            where: { id: seguidoId, fechaBaja: null }
         });
 
         if (!seguidor || !seguido) {
@@ -223,10 +241,10 @@ router.put('/usuarios/dejarDeSeguir/:id', async (req, res) => {
 
     try {
         const seguidor = await prisma.usuario.findUnique({
-            where: { id: seguidorId }
+            where: { id: seguidorId, fechaBaja: null }
         });
         const seguido = await prisma.usuario.findUnique({
-            where: { id: seguidoId }
+            where: { id: seguidoId, fechaBaja: null }
         });
 
         if (!seguidor || !seguido) {

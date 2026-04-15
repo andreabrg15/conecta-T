@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy } from '@angular/core';
-import { Users } from '../../users';
+import { Users } from '../../services/users';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -33,7 +33,7 @@ import { Router } from '@angular/router';
           class="bg-white/60 rounded-md cursor-pointer file:bg-zinc-500/80 file:p-2" formControlName="Photo"/>
           </div>
           <div class="grid justify-center md:col-span-2 pt-4">
-            <img alt="Preview Photo" src="{{avatarUrl}}" class="w-35 md:w-40 lg:w-45 bg-zinc-300 rounded-xl">
+            <img alt="Preview Photo" src="{{avatarUrl}}" class="max-w-35 md:max-w-40 lg:max-w-45 bg-zinc-300 rounded-xl">
           </div>
 
           <div class="grid px-5 pb-5 md:p-0 md:col-span-2">

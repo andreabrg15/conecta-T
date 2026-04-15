@@ -1,4 +1,4 @@
-export interface UserInfo {
+export interface UserModel {
     id: number,
     nombreUsuario: string,
     contrasena: string,

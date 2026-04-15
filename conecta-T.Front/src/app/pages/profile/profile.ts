@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Users } from '../../users';
+import { Users } from '../../services/users';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -11,10 +11,10 @@ import { AsyncPipe } from '@angular/common';
       @if (user$ | async; as user) {
         <div class="flex flex-col items-center text-center gap-5 p-10">
           @if (user.foto) {
-            <img src="{{getPhotoUrl(user.foto)}}" class="w-48 h-48 rounded-full border-2 border-white" alt="Imagen de perfil">
+            <img src="{{getPhotoUrl(user.foto)}}" class="size-48 rounded-full border-2 border-white" alt="Imagen de perfil">
           }
           @else {
-            <img src="user_profile_avatar_icon.png" class="w-48 h-48 bg-zinc-300 rounded-full border-2 border-white" alt="Imagen de perfil">
+            <img src="user_profile_avatar_icon.png" class="size-48 bg-zinc-300 rounded-full border-2 border-white" alt="Imagen de perfil">
           }
           <h2 class="text-3xl tracking-[0.1em] font-bold font-story-script text-white">{{user.nombreUsuario}}</h2>
           <div class="flex gap-5 text-xl text-zinc-800 font-bold">

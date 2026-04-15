@@ -3,6 +3,7 @@ import { Home } from './pages/home/home';
 import { Profile } from './pages/profile/profile';
 import { Feed } from './pages/feed/feed';
 import { Register } from './pages/register/register';
+import { CreatePost } from './pages/create-post/create-post';
 
 export const routes: Routes = [
     {
@@ -24,6 +25,11 @@ export const routes: Routes = [
         path: 'feed', 
         component: Feed,
         title: 'Inicio | Conecta-T'
+    },
+    {
+        path: 'publicar',
+        component: CreatePost,
+        title: 'Crear publicacion | Conecta-T'
     },
     {
         path: '**', redirectTo: ''

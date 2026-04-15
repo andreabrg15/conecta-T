@@ -1,7 +1,81 @@
 import { Router } from 'express';
 import { prisma } from '../database.js';
+import multer from 'multer';
+import path from 'node:path';
 
 const router = Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/publicaciones');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+})
+
+const filter = (req, file, cb) => {
+    const allowedFiles = ['image/jpeg', 'image/jpg', 'image/png'];
+
+    if (allowedFiles.includes(file.mimetype)) {
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Tipo de archivo no aceptado. Debe ser .JPEG .JPG .PNG'), false);
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    fileFilter: filter
+})
+
+// Metodo POST --> /publicaciones (Subir nueva publicacion)
+router.post('/publicaciones', upload.single('foto'), async (req, res) => {
+
+    const { texto, autorId } = req.body;
+
+    const autor = Number(autorId);
+
+    const foto = req.file ? req.file.path : null;
+
+    try {
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: autor }
+        });
+
+        if (!usuario || usuario.fechaBaja != null) {
+            return res.status(404).json({"error": "No se pudo encontrar un usuario con ese Id"});
+        }
+        /*
+        Ejemplo: Ingresar esto en el body
+        {
+            "texto": "hooooolaaa",
+            "foto": "https://example.com/fotos/miFoto.jpg",
+            "autorId": 1
+        }
+        */
+        const publicacion = await prisma.publicacion.create({
+            data: {
+                texto,
+                foto,
+                autorId: autor
+            },
+            include: {
+                autor: {
+                    select: {
+                        nombreUsuario: true,
+                        foto: true
+                    }
+                }
+            }
+        });
+
+        res.status(201).json(publicacion);
+    } catch (error) {
+        res.status(500).json({"message": error.message});
+    }
+})
 
 // Metodo GET --> /publicaciones (Obtener lista de publicaciones de quienes sigue un usuario -FEED-)
 router.get('/publicaciones', async (req, res) => {
@@ -61,52 +135,6 @@ router.get('/publicaciones/:autorId', async (req, res) => {
             orderBy: { fechaCreacion: "desc" }
         });
         res.status(200).json(publicaciones);
-    } catch (error) {
-        res.status(500).json({"message": error.message});
-    }
-})
-
-// Metodo POST --> /publicaciones (Subir nueva publicacion)
-router.post('/publicaciones', async (req, res) => {
-    const { texto, foto, autorId } = req.body;
-
-    if (typeof autorId != 'number') {
-        return res.status(400).json({"error": "El Id del autor debe ser un número"});
-    }
-
-    try {
-        const usuario = await prisma.usuario.findUnique({
-            where: { id: autorId }
-        });
-
-        if (!usuario || usuario.fechaBaja != null) {
-            return res.status(404).json({"error": "No se pudo encontrar un usuario con ese Id"});
-        }
-        /*
-        Ejemplo: Ingresar esto en el body
-        {
-            "texto": "hooooolaaa",
-            "foto": "https://example.com/fotos/miFoto.jpg",
-            "autorId": 1
-        }
-        */
-        const publicacion = await prisma.publicacion.create({
-            data: {
-                texto,
-                foto,
-                autorId
-            },
-            include: {
-                autor: {
-                    select: {
-                        nombreUsuario: true,
-                        foto: true
-                    }
-                }
-            }
-        });
-
-        res.status(201).json(publicacion);
     } catch (error) {
         res.status(500).json({"message": error.message});
     }
