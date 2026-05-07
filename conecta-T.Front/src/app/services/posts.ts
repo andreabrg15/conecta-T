@@ -16,7 +16,7 @@ export class Posts {
     return this.http.post(this.baseUrl, data);
   }
 
-  getPostsFollowed( id_usuario: number ) : Observable<PostModel[]> {
+  getUserPosts( id_usuario: number ) : Observable<PostModel[]> {
     return this.http.get<PostModel[]>(`${this.baseUrl}/${id_usuario}`);
   }
 }
